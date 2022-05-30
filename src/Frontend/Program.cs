@@ -7,7 +7,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddGrpcClient<IngredientsService.IngredientsServiceClient>(o =>
 {
-    if (Environment.OSVersion.Platform == PlatformID.MacOSX)
+    if (OperatingSystem.IsMacOS())
     {
         o.Address = new Uri("http://localhost:5002");
     }
