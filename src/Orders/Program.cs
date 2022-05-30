@@ -1,6 +1,9 @@
 using Ingredients.Protos;
+using Orders.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddGrpc();
 
 var binding = OperatingSystem.IsMacOS() ? "http" : "https";
 var defaultUri = OperatingSystem.IsMacOS() ? "http://localhost:5002" : "https://localhost:5003";
@@ -15,6 +18,6 @@ builder.Services.AddGrpcClient<IngredientsService.IngredientsServiceClient>(o =>
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGrpcService<OrdersImpl>();
 
 app.Run();

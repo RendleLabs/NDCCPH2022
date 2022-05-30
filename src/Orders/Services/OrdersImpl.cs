@@ -24,11 +24,11 @@ public class OrdersImpl : OrderService.OrderServiceBase
             CrustId = request.CrustId
         });
 
-        var now = DateTimeOffset.UtcNow;
+        var dueBy = DateTimeOffset.UtcNow.AddMinutes(45);
 
         return new PlaceOrderResponse
         {
-            DueBy = now.ToTimestamp()
+            DueBy = dueBy.ToTimestamp()
         };
     }
 }
