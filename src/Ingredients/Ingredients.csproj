@@ -13,5 +13,9 @@
   <ItemGroup>
     <Protobuf Include="Protos/ingredients.proto" GrpcServices="Server" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Ingredients.Data\Ingredients.Data.csproj" />
+  </ItemGroup>
 
 </Project>
