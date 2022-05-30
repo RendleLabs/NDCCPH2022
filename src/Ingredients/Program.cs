@@ -16,6 +16,7 @@ if (Environment.OSVersion.Platform == PlatformID.MacOSX)
 }
 
 builder.Services.AddSingleton<IToppingData, ToppingData>();
+builder.Services.AddSingleton<IngredientsImpl>();
 
 builder.Services.AddGrpc();
 
