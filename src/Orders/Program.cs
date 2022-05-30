@@ -1,4 +1,5 @@
 using Ingredients.Protos;
+using Orders.PubSub;
 using Orders.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,8 @@ builder.Services.AddGrpcClient<IngredientsService.IngredientsServiceClient>(o =>
 {
     o.Address = ingredientsUri;
 });
+
+builder.Services.AddOrderPubSub();
 
 var app = builder.Build();
 
