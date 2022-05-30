@@ -17,6 +17,14 @@ public class ToppingsTests : IClassFixture<IngredientsApplicationFactory>
         var request = new GetToppingsRequest();
         var client = _factory.CreateGrpcClient();
         var response = await client.GetToppingsAsync(request);
-        Assert.NotEmpty(response.Toppings);
+        Assert.Collection(response.Toppings,
+            t =>
+            {
+                Assert.Equal("cheese", t.Id);
+            },
+            t =>
+            {
+                Assert.Equal("tomato", t.Id);
+            });
     }
 }
