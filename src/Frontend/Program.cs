@@ -5,16 +5,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+var binding = OperatingSystem.IsMacOS() ? "http" : "https";
+var defaultUri = OperatingSystem.IsMacOS() ? "http://localhost:5002" : "https://localhost:5003";
+
+var ingredientsUri = builder.Configuration.GetServiceUri("ingredients", binding)
+    ?? new Uri(defaultUri);
+
 builder.Services.AddGrpcClient<IngredientsService.IngredientsServiceClient>(o =>
 {
-    if (OperatingSystem.IsMacOS())
-    {
-        o.Address = new Uri("http://localhost:5002");
-    }
-    else
-    {
-        o.Address = new Uri("https://localhost:5003");
-    }
+    o.Address = ingredientsUri;
 });
 
 var app = builder.Build();

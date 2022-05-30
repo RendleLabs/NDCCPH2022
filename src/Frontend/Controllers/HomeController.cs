@@ -32,7 +32,7 @@ public class HomeController : Controller
     {
         var response = await _ingredients.GetToppingsAsync(new GetToppingsRequest());
         return response.Toppings
-            .Select(t => new ToppingViewModel(t.Id, t.Name, Convert.ToDecimal(t.Price)))
+            .Select(t => new ToppingViewModel(t.Id, t.Name, t.Price))
             .ToList();
     }
 
@@ -40,7 +40,7 @@ public class HomeController : Controller
     {
         var response = await _ingredients.GetCrustsAsync(new GetCrustsRequest());
         return response.Crusts
-            .Select(c => new CrustViewModel(c.Id, c.Name, c.Size, Convert.ToDecimal(c.Price)))
+            .Select(c => new CrustViewModel(c.Id, c.Name, c.Size, c.Price))
             .OrderBy(c => c.Size)
             .OrderBy(c => c.Name)
             .ToList();

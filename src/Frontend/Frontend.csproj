@@ -13,10 +13,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Tye.Extensions.Configuration" Version="0.10.0-alpha.21420.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\ingredients.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\decimal.proto" GrpcServices="None" />
+    <Protobuf Include="Protos\ingredients.proto" GrpcServices="Client" ProtoRoot="Protos" />
   </ItemGroup>
 
 </Project>

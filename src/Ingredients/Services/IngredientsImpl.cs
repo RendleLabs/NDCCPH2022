@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using System.Diagnostics;
+using Grpc.Core;
 using Ingredients.Data;
 using Ingredients.Protos;
 
@@ -17,7 +18,8 @@ public class IngredientsImpl : IngredientsService.IngredientsServiceBase
     
     public override async Task<GetToppingsResponse> GetToppings(GetToppingsRequest request, ServerCallContext context)
     {
-        var toppings = await _toppingData.GetAsync(context.CancellationToken);
+        var toppings = (await _toppingData.GetAsync(context.CancellationToken))
+            .OrderBy(t => t.Id);
 
         var response = new GetToppingsResponse
         {
@@ -37,6 +39,7 @@ public class IngredientsImpl : IngredientsService.IngredientsServiceBase
 
     public override async Task<GetCrustsResponse> GetCrusts(GetCrustsRequest request, ServerCallContext context)
     {
+        Debug.WriteLine("Foo");
         var crusts = await _crustData.GetAsync(context.CancellationToken);
 
         var response = new GetCrustsResponse
