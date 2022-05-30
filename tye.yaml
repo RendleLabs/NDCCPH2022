@@ -19,3 +19,5 @@ services:
   project: src/Ingredients/Ingredients.csproj
 - name: orders
   project: src/Orders/Orders.csproj
+- name: shop-console
+  project: src/ShopConsole/ShopConsole.csproj
