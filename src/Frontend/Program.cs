@@ -1,7 +1,21 @@
+using Ingredients.Protos;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddGrpcClient<IngredientsService.IngredientsServiceClient>(o =>
+{
+    if (Environment.OSVersion.Platform == PlatformID.MacOSX)
+    {
+        o.Address = new Uri("http://localhost:5002");
+    }
+    else
+    {
+        o.Address = new Uri("https://localhost:5003");
+    }
+});
 
 var app = builder.Build();
 
