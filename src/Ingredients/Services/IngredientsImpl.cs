@@ -58,4 +58,24 @@ public class IngredientsImpl : IngredientsService.IngredientsServiceBase
 
         return response;
     }
+
+    public override async Task<DecrementToppingsResponse> DecrementToppings(DecrementToppingsRequest request, ServerCallContext context)
+    {
+        foreach (var id in request.ToppingIds)
+        {
+            await _toppingData.DecrementStockAsync(id);
+        }
+
+        return DecrementToppingsResponse;
+    }
+
+    public override async Task<DecrementCrustsResponse> DecrementCrusts(DecrementCrustsRequest request, ServerCallContext context)
+    {
+        await _crustData.DecrementStockAsync(request.CrustId);
+
+        return DecrementCrustsResponse;
+    }
+
+    private static readonly DecrementToppingsResponse DecrementToppingsResponse = new();
+    private static readonly DecrementCrustsResponse DecrementCrustsResponse = new();
 }
