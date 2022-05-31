@@ -1,4 +1,5 @@
 using Ingredients.Protos;
+using JaegerTracing;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Orders.PubSub;
 using Orders.Services;
@@ -7,6 +8,8 @@ var runningInContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_C
 var macOS = OperatingSystem.IsMacOS();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddJaegerTracing("OrdersImpl");
 
 if (runningInContainer)
 {

@@ -1,10 +1,13 @@
 using Ingredients.Protos;
+using JaegerTracing;
 using Orders.Protos;
 
 var runningInContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
 var macOS = OperatingSystem.IsMacOS();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddJaegerTracing();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

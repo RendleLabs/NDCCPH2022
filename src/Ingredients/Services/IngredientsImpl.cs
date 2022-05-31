@@ -9,15 +9,19 @@ public class IngredientsImpl : IngredientsService.IngredientsServiceBase
 {
     private readonly IToppingData _toppingData;
     private readonly ICrustData _crustData;
+    private readonly ILogger<IngredientsImpl> _logger;
 
-    public IngredientsImpl(IToppingData toppingData, ICrustData crustData)
+    public IngredientsImpl(IToppingData toppingData, ICrustData crustData, ILogger<IngredientsImpl> logger)
     {
         _toppingData = toppingData;
         _crustData = crustData;
+        _logger = logger;
     }
     
     public override async Task<GetToppingsResponse> GetToppings(GetToppingsRequest request, ServerCallContext context)
     {
+        _logger.LogInformation("GetToppings");
+        
         var toppings = (await _toppingData.GetAsync(context.CancellationToken))
             .OrderBy(t => t.Id);
 
@@ -39,7 +43,7 @@ public class IngredientsImpl : IngredientsService.IngredientsServiceBase
 
     public override async Task<GetCrustsResponse> GetCrusts(GetCrustsRequest request, ServerCallContext context)
     {
-        Debug.WriteLine("Foo");
+        _logger.LogInformation("GetCrusts");
         var crusts = await _crustData.GetAsync(context.CancellationToken);
 
         var response = new GetCrustsResponse

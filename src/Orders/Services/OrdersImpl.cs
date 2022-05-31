@@ -1,4 +1,5 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿using System.Diagnostics;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Ingredients.Protos;
 using Orders.Protos;
@@ -8,6 +9,8 @@ namespace Orders.Services;
 
 public class OrdersImpl : OrderService.OrderServiceBase
 {
+    private static readonly ActivitySource Source = new("OrdersImpl");
+    
     private readonly IngredientsService.IngredientsServiceClient _ingredients;
     private readonly IOrderPublisher _orderPublisher;
     private readonly IOrderMessages _orderMessages;
@@ -37,7 +40,12 @@ public class OrdersImpl : OrderService.OrderServiceBase
 
             var dueBy = DateTimeOffset.UtcNow.AddMinutes(45);
 
-            await _orderPublisher.PublishOrder(request.CrustId, request.ToppingIds, dueBy);
+            using (var activity = Source.StartActivity("PublishOrder", ActivityKind.Client))
+            {
+                activity?.AddTag("crust_id", request.CrustId);
+                
+                await _orderPublisher.PublishOrder(request.CrustId, request.ToppingIds, dueBy);
+            }
 
             return new PlaceOrderResponse
             {
