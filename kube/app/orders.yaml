@@ -22,6 +22,15 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 80
+        env:
+        - name: DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP2UNENCRYPTEDSUPPORT
+          value: 'true'
+        - name: Service__Ingredients__Http__Host
+          value: 'ingredients'
+        - name: Service__Ingredients__Http__Port
+          value: '80'
+        - name: Service__Ingredients__Http__Protocol
+          value: 'http'
 
 ---
 

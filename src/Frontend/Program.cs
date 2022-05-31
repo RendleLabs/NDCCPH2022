@@ -1,17 +1,23 @@
 using Ingredients.Protos;
 using Orders.Protos;
 
+var runningInContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+var macOS = OperatingSystem.IsMacOS();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var binding = OperatingSystem.IsMacOS() ? "http" : "https";
-var defaultIngredientsUri = OperatingSystem.IsMacOS() ? "http://localhost:5002" : "https://localhost:5003";
-var defaultOrdersUri = OperatingSystem.IsMacOS() ? "http://localhost:5004" : "https://localhost:5005";
+var binding = runningInContainer || macOS ? "http" : "https";
+
+var defaultIngredientsUri = macOS ? "http://localhost:5002" : "https://localhost:5003";
+var defaultOrdersUri = macOS ? "http://localhost:5004" : "https://localhost:5005";
 
 var ingredientsUri = builder.Configuration.GetServiceUri("ingredients", binding)
     ?? new Uri(defaultIngredientsUri);
+
+Console.WriteLine($"Ingredients: {ingredientsUri.ToString()}");
 
 var ordersUri = builder.Configuration.GetServiceUri("orders", binding)
                 ?? new Uri(defaultOrdersUri);
