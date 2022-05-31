@@ -1,19 +1,24 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using Grpc.Core;
 using Ingredients.Data;
 using Ingredients.Protos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Ingredients.Services;
 
+[Authorize]
 public class IngredientsImpl : IngredientsService.IngredientsServiceBase
 {
     private readonly IToppingData _toppingData;
     private readonly ICrustData _crustData;
+    private readonly ILogger<IngredientsImpl> _logger;
 
-    public IngredientsImpl(IToppingData toppingData, ICrustData crustData)
+    public IngredientsImpl(IToppingData toppingData, ICrustData crustData, ILogger<IngredientsImpl> logger)
     {
         _toppingData = toppingData;
         _crustData = crustData;
+        _logger = logger;
     }
     
     public override async Task<GetToppingsResponse> GetToppings(GetToppingsRequest request, ServerCallContext context)
@@ -61,6 +66,9 @@ public class IngredientsImpl : IngredientsService.IngredientsServiceBase
 
     public override async Task<DecrementToppingsResponse> DecrementToppings(DecrementToppingsRequest request, ServerCallContext context)
     {
+        var name = context.GetHttpContext().User.FindFirstValue(ClaimTypes.Name);
+        _logger.LogInformation("Toppings decremented by {Name}", name);
+        
         foreach (var id in request.ToppingIds)
         {
             await _toppingData.DecrementStockAsync(id);

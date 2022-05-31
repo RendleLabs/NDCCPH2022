@@ -1,3 +1,5 @@
+using AuthHelp;
+using Grpc.Core;
 using Ingredients.Protos;
 using Orders.Protos;
 
@@ -11,20 +13,38 @@ var defaultIngredientsUri = OperatingSystem.IsMacOS() ? "http://localhost:5002" 
 var defaultOrdersUri = OperatingSystem.IsMacOS() ? "http://localhost:5004" : "https://localhost:5005";
 
 var ingredientsUri = builder.Configuration.GetServiceUri("ingredients", binding)
-    ?? new Uri(defaultIngredientsUri);
+                     ?? new Uri(defaultIngredientsUri);
 
 var ordersUri = builder.Configuration.GetServiceUri("orders", binding)
                 ?? new Uri(defaultOrdersUri);
 
-builder.Services.AddGrpcClient<IngredientsService.IngredientsServiceClient>(o =>
-{
-    o.Address = ingredientsUri;
-});
+builder.Services.AddHttpClient("ingredients")
+    .ConfigurePrimaryHttpMessageHandler(DevelopmentModeCertificateHelper.CreateClientHandler);
 
-builder.Services.AddGrpcClient<OrderService.OrderServiceClient>(o =>
-{
-    o.Address = ordersUri;
-});
+builder.Services
+    .AddGrpcClient<IngredientsService.IngredientsServiceClient>(o => { o.Address = ingredientsUri; })
+    .ConfigureChannel(((provider, channel) =>
+    {
+        channel.HttpHandler = null;
+        channel.HttpClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient("ingredients");
+        channel.DisposeHttpClient = true;
+    }));
+
+builder.Services
+    .AddGrpcClient<OrderService.OrderServiceClient>(o => { o.Address = ordersUri; })
+    .ConfigureChannel((channel) =>
+    {
+        var authClient = new HttpClient
+        {
+            BaseAddress = ordersUri
+        };
+        var callCredentials = CallCredentials.FromInterceptor(async (_, metadata) =>
+        {
+            var token = await authClient.GetStringAsync("/generateJwt?name=frontend");
+            metadata.Add("Authorization", $"Bearer {token}");
+        });
+        channel.Credentials = ChannelCredentials.Create(ChannelCredentials.SecureSsl, callCredentials);
+    });
 
 var app = builder.Build();
 

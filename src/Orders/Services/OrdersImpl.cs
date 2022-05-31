@@ -1,6 +1,8 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿using System.Security.Claims;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Ingredients.Protos;
+using Microsoft.AspNetCore.Authorization;
 using Orders.Protos;
 using Orders.PubSub;
 
@@ -22,8 +24,14 @@ public class OrdersImpl : OrderService.OrderServiceBase
         _logger = logger;
     }
     
+    [Authorize]
     public override async Task<PlaceOrderResponse> PlaceOrder(PlaceOrderRequest request, ServerCallContext context)
     {
+        var user = context.GetHttpContext().User;
+        var name = user.FindFirstValue(ClaimTypes.Name);
+        
+        _logger.LogInformation("Order placed by {User}", name);
+        
         try
         {
             await _ingredients.DecrementToppingsAsync(new DecrementToppingsRequest
